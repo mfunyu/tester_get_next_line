@@ -32,6 +32,8 @@ int		main(int ac, char **av)
 		}
 		free(line);
 	}
+	if (line)
+		free (line);
 	// for leaks command
 	// while(1){}
 }

@@ -1,6 +1,6 @@
 
 
-SRC_DIR := ../get_next_line1
+SRC_DIR := ../GNL
 
 CC := gcc
 # CFLAGS := -Wall -Wextra -Werror -g -fsanitize=address
