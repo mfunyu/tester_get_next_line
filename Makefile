@@ -29,8 +29,8 @@ $(OBJS_DIR)%.o: %.c
 $(OBJS_DIR):
 	@-mkdir $@
 
-bonus : $(BOBJS)
-	$(CC) $(CFLAGS) $^ -o $@
+bonus : $(OBJS_DIR) $(BOBJS)
+	$(CC) $(CFLAGS) $(BOBJS) -o $@
 
 check :
 	bash check.sh
