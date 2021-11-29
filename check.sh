@@ -1,32 +1,15 @@
 
 make -s fclean
 
-#FILES-------------------------------------------------------------------------------------
+# define
+CYAN="\033[36m"
+RED="\033[31m"
+GREEN="\033[32m"
+YELLOW="\033[33m"
+RESET="\033[m"
 
 FILES=`ls -1 ./txts | grep ".txt"`
 FLIELST=(${FILES// / })
-
-for FILE in "${FLIELST[@]}"; do
-
-printf "<<------------$FILE----------------->>\n"
-
-#0-19-------------------------------------------------------------------------------------
-
-for ((i=0 ; i < 19; i++)); do
-	printf '\e[36;1m[BUFFER_SIZE='$i']\e[m'
-	make -sB ARG=$i
-	printf " :  "
-	./exec txts/$FILE > results/ac$i.txt
-	# ./exec txts/$FILE | ghead -c -1 > results/ac$i.txt
-	diff -c results/ac$i.txt txts/$FILE >> log.txt
-	if [ $? = 1 ]; then
-		printf "\e[31;1m [KO] :(\e[m\n"
-	else
-		printf "\e[32;1m [OK] :)\e[m\n"
-	fi
-done
-
-#any numbers-------------------------------------------------------------------------------------
 
 ARGS=(
 32
@@ -37,37 +20,41 @@ ARGS=(
 10000000
 )
 
-for i in "${ARGS[@]}"; do
-printf '\e[36;1m[BUFFER_SIZE='$i']\e[m'
-make -sB ARG=$i
-printf " :  "
-./exec txts/$FILE > results/ac$i.txt
-# ./exec txts/$FILE | ghead -c -1 > results/ac$i.txt
-# if [ $? = 0 ]; then
-# 	printf "\e[33;1m error ;)\e[m\n"
-# fi
-diff -c results/ac$i.txt txts/$FILE >> log.txt
-if [ $? = 1 ]; then
-	printf "\e[31;1m [KO] :(\e[m\n"
-else
-	printf "\e[32;1m [OK] :)\e[m\n"
-fi
-done
+function test()
+{
+	printf "${CYAN}[BUFFER_SIZE='$1']${RESET} :  "
+	make -sB ARG=$1
+	./exec txts/$FILE > results/ac$1.txt
+	# ./exec txts/$FILE | ghead -c -1 > results/ac$1.txt
+	# if [ $? = 0 ]; then
+	# 	printf "\e[33;1m error ;)${RESET}\n"
+	# fi
+	diff -c results/ac$1.txt txts/$FILE >> log.txt
+	if [ $? = 1 ]; then
+		printf "${RED} [KO] :(${RESET}\n"
+	else
+		printf "${GREEN} [OK] :)${RESET}\n"
+	fi
+}
 
-#-------------------------------------------------------------------------------------
-done
+for FILE in "${FLIELST[@]}"; do
+	printf "<<------------$FILE----------------->>\n"
 
-#STDinput-------------------------------------------------------------------------------------
+	for ((i=0 ; i < 19; i++)); do
+		test $i
+	done
+	for i in "${ARGS[@]}"; do
+		test $i
+	done
+done
 
 printf "<<------------STD input----------------->>\n"
 
 for i in "${ARGS[@]}"; do
-printf '\e[36;1m[BUFFER_SIZE='$i']\e[m'
-make -s ARG=$i re
-printf " : \n"
-./exec
+	printf "${CYAN}[BUFFER_SIZE=$i]${RESET} :  \n"
+	make -s ARG=$i re
+	./exec
 done
 
 printf "you can find diff results in log.txt\n"
 
-# make -s clean
