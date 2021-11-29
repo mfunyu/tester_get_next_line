@@ -20,40 +20,40 @@ ARGS=(
 10000000
 )
 
+error=0
+
 function test()
 {
-	printf "${CYAN}[BUFFER_SIZE=$1]${RESET} :  "
+	printf "<<------------ %s ----------->>\n" "BUFFER_SIZE=$1"
 	make -sB ARG=$1 2> /dev/null
-	./exec txts/$FILE > results/ac$1.txt
-	if [ $1 = 0 ]; then
-		diff -c results/ac$1.txt txts/empty.txt >> log.txt
-	else
-		diff -c results/ac$1.txt txts/$FILE >> log.txt
-	fi
-	if [ $? = 1 ]; then
-		printf "${RED} [KO] :(${RESET}\n"
-	else
-		printf "${GREEN} [OK] :)${RESET}\n"
-	fi
+
+	for FILE in "${FLIELST[@]}"; do
+		printf "${CYAN}[%-20s]${RESET} :  " $FILE
+		./exec txts/$FILE > results/ac$1.txt
+		if [ $1 = 0 ]; then
+			diff -c results/ac$1.txt txts/empty.txt >> log.txt
+		else
+			diff -c results/ac$1.txt txts/$FILE >> log.txt
+		fi
+		if [ $? = 1 ]; then
+			printf "${RED} [KO] :(${RESET}\n"
+			error=$((error + 1))
+		else
+			printf "${GREEN} [OK] :)${RESET}\n"
+		fi
+	done
 }
 
-for FILE in "${FLIELST[@]}"; do
-	printf "<<------------$FILE----------------->>\n"
-
-	for ((i=0 ; i < 19; i++)); do
-		test $i
-	done
-	for i in "${ARGS[@]}"; do
-		test $i
-	done
+for ((i=0 ; i <= 10; i++)); do
+	test $i
 done
-
-printf "<<------------STD input----------------->>\n"
 for i in "${ARGS[@]}"; do
-	printf "${CYAN}[BUFFER_SIZE=$i]${RESET} :  \n"
-	make -sB ARG=$i 2> /dev/null
-	./exec
+	test $i
 done
 
-printf "you can find diff results in log.txt\n"
+if [ $error = 0 ]; then
+	printf "\n${GREEN}[ Perfect! ] :)${RESET}\n"
+else
+	printf "\nyou can find diff results in log.txt\n"
+fi
 
