@@ -8,19 +8,26 @@ CFLAGS	:= -Wall -Wextra -Werror -I$(VPATH) -D BUFFER_SIZE=$(ARG)
 SRCS	:= gnl_main.c \
 			get_next_line.c \
 			get_next_line_utils.c
-OBJS	:= $(SRCS:.c=.o)
+OBJS_DIR:= objs/
+OBJS	:= $(addprefix $(OBJS_DIR), $(SRCS:.c=.o))
 BSRCS	:= gnl_main_bonus.c \
 			get_next_line_bonus.c \
 			get_next_line_utils_bonus.c
-BOBJS	:= $(BSRCS:.c=.o)
+BOBJS	:= $(addprefix $(OBJS_DIR), $(BSRCS:.c=.o))
 
 
 TXT :=
 
 all : $(NAME)
 
-$(NAME) : $(OBJS)
-	$(CC) $(CFLAGS) $^ -o $@
+$(NAME) : $(OBJS_DIR) $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -o $@
+
+$(OBJS_DIR)%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJS_DIR):
+	@-mkdir $@
 
 bonus : $(BOBJS)
 	$(CC) $(CFLAGS) $^ -o $@
@@ -32,6 +39,6 @@ clean :
 	$(RM) $(NAME) bonus
 
 fclean : clean
-	$(RM) results/*.txt log.txt dbg_log.txt
+	$(RM) -R $(OBJS_DIR) results/*.txt *.txt
 
 re : clean all
