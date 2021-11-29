@@ -14,10 +14,10 @@ printf "<<------------$FILE----------------->>\n"
 for ((i=0 ; i < 19; i++))
 do
 printf '\e[36;1m[BUFFER_SIZE='$i']\e[m'
-make -s ARG=$i re
+make -sB ARG=$i
 printf " :  "
-./test txts/$FILE > results/ac$i.txt
-# ./test txts/$FILE | ghead -c -1 > results/ac$i.txt
+./exec txts/$FILE > results/ac$i.txt
+# ./exec txts/$FILE | ghead -c -1 > results/ac$i.txt
 diff -c results/ac$i.txt txts/$FILE >> log.txt
 if [ $? = 1 ]; then
 	printf "\e[31;1m [KO] :(\e[m\n"
@@ -31,10 +31,10 @@ done
 for i in 32 1024 1025 9999 100000 10000000
 do
 printf '\e[36;1m[BUFFER_SIZE='$i']\e[m'
-make -s ARG=$i re
+make -sB ARG=$i
 printf " :  "
-./test txts/$FILE > results/ac$i.txt
-# ./test txts/$FILE | ghead -c -1 > results/ac$i.txt
+./exec txts/$FILE > results/ac$i.txt
+# ./exec txts/$FILE | ghead -c -1 > results/ac$i.txt
 # if [ $? = 0 ]; then
 # 	printf "\e[33;1m error ;)\e[m\n"
 # fi
@@ -58,7 +58,7 @@ do
 printf '\e[36;1m[BUFFER_SIZE='$i']\e[m'
 make -s ARG=$i re
 printf " : \n"
-./test
+./exec
 done
 
 printf "you can find diff results in log.txt\n"
