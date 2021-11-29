@@ -2,38 +2,28 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
-int		get_next_line(int fd, char **line);
+#include "get_next_line.h"
 
 int		main(int ac, char **av)
 {
 	char	*line;
-	int		fd = 0;
-	int 	ret;
+	int		fd;
 
+	fd = 0;
 	if (ac > 1)
 	{
 		fd = open(av[1], O_RDONLY);
 	}
 	while (1)
 	{
-		ret = get_next_line(fd, &line);
-		if (ret == -1)
+		line = get_next_line(fd);
+		if (!line)
 		{
 			break ;
 		}
-		else
-		{
-			if (ret == 0)
-			{
-				break ;
-			}
-			printf("%s\n", line);
-		}
+		printf("%s", line);
 		free(line);
 	}
 	if (line)
-		free (line);
-	// for leaks command
-	// while(1){}
+		free(line);
 }
