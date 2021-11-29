@@ -22,14 +22,14 @@ ARGS=(
 
 function test()
 {
-	printf "${CYAN}[BUFFER_SIZE='$1']${RESET} :  "
-	make -sB ARG=$1
+	printf "${CYAN}[BUFFER_SIZE=$1]${RESET} :  "
+	make -sB ARG=$1 2> /dev/null
 	./exec txts/$FILE > results/ac$1.txt
-	# ./exec txts/$FILE | ghead -c -1 > results/ac$1.txt
-	# if [ $? = 0 ]; then
-	# 	printf "\e[33;1m error ;)${RESET}\n"
-	# fi
-	diff -c results/ac$1.txt txts/$FILE >> log.txt
+	if [ $1 = 0 ]; then
+		diff -c results/ac$1.txt txts/empty.txt >> log.txt
+	else
+		diff -c results/ac$1.txt txts/$FILE >> log.txt
+	fi
 	if [ $? = 1 ]; then
 		printf "${RED} [KO] :(${RESET}\n"
 	else
@@ -49,10 +49,9 @@ for FILE in "${FLIELST[@]}"; do
 done
 
 printf "<<------------STD input----------------->>\n"
-
 for i in "${ARGS[@]}"; do
 	printf "${CYAN}[BUFFER_SIZE=$i]${RESET} :  \n"
-	make -s ARG=$i re
+	make -sB ARG=$i 2> /dev/null
 	./exec
 done
 
